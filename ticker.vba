@@ -8,17 +8,19 @@ Private Function nextIndex(currentIndex As Long, WS As Worksheet) As Long
     i = currentIndex
     Dim currentTick As String
     currentTick = WS.Cells(currentIndex, 1).value
-    While WS.Cells(i, 1).value = currentTick
+    While (WS.Cells(i, 1).value = currentTick And currentTick <> "")
+        WS.Cells(i, 8).value = i
         i = i + 1
     Wend
     nextIndex = i
+    WS.Cells(i, 9).value = i
 End Function
 
-Private Function Volume(fst As Long, lst As Long, WS As Worksheet) As Long
-    Dim total As Long
+Private Function Volume(fst As Long, lst As Long, WS As Worksheet) As LongLong
+    Dim total As LongLong
     total = 0
     For i = fst To lst
-        total = total + CLng(WS.Cells(7, i).value)
+        total = total + CLngLng(WS.Cells(i, 7).value)
     Next i
     Volume = total
 End Function
@@ -55,7 +57,7 @@ Private Function Delta(fst As Long, lst As Long, WS As Worksheet) As Double
     Delta = WS.Cells(lst, 6).value - WS.Cells(fst, 3).value
 End Function
 
-Private Function PercentDelta(fst As Long, lst As Long, WS As Worksheet) As Double
+Private Function PercentDelta(fst As Long, lst As Long, WS As Worksheet) As Long
     PercentDelta = (WS.Cells(lst, 6).value - WS.Cells(fst, 3).value) / WS.Cells(fst, 3).value
 End Function
 
@@ -63,7 +65,7 @@ Public Sub StockAnalysis()
     Dim WS As Worksheet
     Dim Ticker As String
 
-    Dim vol As Long
+    Dim vol As LongLong
 
     Dim Summary_Table_Row As Long
 
