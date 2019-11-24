@@ -1,35 +1,35 @@
-Private Function TickerVal(index As Integer, WS As Worksheet) As String
-    TickerVal = WS.Cells(index, 1).Value
+Private Function TickerVal(index As Long, WS As Worksheet) As String
+    TickerVal = WS.Cells(index, 1).value
 End Function
 
 
-Private Function nextIndex(currentIndex As Integer, WS As Worksheet) As Integer
-    Dim i As Integer
+Private Function nextIndex(currentIndex As Long, WS As Worksheet) As Long
+    Dim i As Long
     i = currentIndex
     Dim currentTick As String
-    currentTick = WS.Cells(currentIndex, 1).Value
-    While WS.Cells(i, 1).Value = currentTick
+    currentTick = WS.Cells(currentIndex, 1).value
+    While WS.Cells(i, 1).value = currentTick
         i = i + 1
     Wend
     nextIndex = i
 End Function
 
-Private Function Volume(fst As Integer, lst As Integer, WS As Worksheet) As Integer
-    Dim total As Integer
+Private Function Volume(fst As Long, lst As Long, WS As Worksheet) As Long
+    Dim total As Long
     total = 0
     For i = fst To lst
-        total = total + WS.Cells(7, i)
+        total = total + CLng(WS.Cells(7, i).value)
     Next i
     Volume = total
 End Function
 
-Private Function ArgMax(fst As Integer, lst As Integer, col As Integer, WS As Worksheet) As Integer
-    Dim runningArgMax As Integer
+Private Function ArgMax(fst As Long, lst As Long, col As Long, WS As Worksheet) As Long
+    Dim runningArgMax As Long
     runningArgMax = fst
     Dim runningMax As Double
-    runningMax = WS.Cells(fst, col).Value
+    runningMax = WS.Cells(fst, col).value
     For i = fst To lst
-        If WS.Cells(i, col).Value > runningMax Then
+        If WS.Cells(i, col).value > runningMax Then
             runningMax = WS.Cells(i, col)
             runningArgMin = i
         End If
@@ -37,11 +37,11 @@ Private Function ArgMax(fst As Integer, lst As Integer, col As Integer, WS As Wo
     ArgMax = runningArgMax
 End Function
 
-Private Function ArgMin(fst As Integer, lst As Integer, col As Integer, WS As Worksheet) As Integer
-    Dim runningArgMin As Integer
+Private Function ArgMin(fst As Long, lst As Long, col As Long, WS As Worksheet) As Long
+    Dim runningArgMin As Long
     runningArgMin = fst
     Dim runningMin As Double
-    runningMin = WS.Cells(fst, col).Value
+    runningMin = WS.Cells(fst, col).value
     For i = fst To lst
         If WS.Cells(i, col) < runningMin Then
             runningMin = WS.Cells(i, col)
@@ -51,40 +51,40 @@ Private Function ArgMin(fst As Integer, lst As Integer, col As Integer, WS As Wo
     ArgMin = runningArgMin
 End Function
 
-Private Function Delta(fst As Integer, lst As Integer, WS As Worksheet) As Double
-    Delta = WS.Cells(lst, 6).Value - WS.Cells(fst, 3).Value
+Private Function Delta(fst As Long, lst As Long, WS As Worksheet) As Double
+    Delta = WS.Cells(lst, 6).value - WS.Cells(fst, 3).value
 End Function
 
-Private Function PercentDelta(fst As Integer, lst As Integer, WS As Worksheet) As Double
-    PercentDelta = 100 * (WS.Cells(lst, 6).Value - WS.Cells(fst, 3).Value) / WS.Cells(fst, 3).Value
+Private Function PercentDelta(fst As Long, lst As Long, WS As Worksheet) As Double
+    PercentDelta = (WS.Cells(lst, 6).value - WS.Cells(fst, 3).value) / WS.Cells(fst, 3).value
 End Function
 
 Public Sub StockAnalysis()
     Dim WS As Worksheet
     Dim Ticker As String
 
-    Dim Vol As Integer
+    Dim vol As Long
 
-    Dim Summary_Table_Row As Integer
+    Dim Summary_Table_Row As Long
 
     Dim yearlyChange As Double
 
     Dim percentChange As Double
 
-    Dim Tick_Begin As Integer
-    Dim Tick_End As Integer
+    Dim Tick_Begin As Long
+    Dim Tick_End As Long
 
-    Dim changeMindex As Integer
-    Dim changeMaxdex As Integer
+    Dim changeMindex As Long
+    Dim changeMaxdex As Long
 
-    Dim volMaxdex As Integer
+    Dim volMaxdex As Long
 
     For Each WS In Worksheets
-        Vol = 0
-        WS.Cells(1, 10).Value = "Ticker"
-        WS.Cells(1, 11).Value = "Yearly Change"
-        WS.Cells(1, 12).Value = "Percent Change"
-        WS.Cells(1, 13).Value = "Total Stock Volume"
+        vol = 0
+        WS.Cells(1, 10).value = "Ticker"
+        WS.Cells(1, 11).value = "Yearly Change"
+        WS.Cells(1, 12).value = "Percent Change"
+        WS.Cells(1, 13).value = "Total Stock Volume"
 
         Tick_Begin = 2
         Tick_End = nextIndex(2, WS) - 1
@@ -92,20 +92,22 @@ Public Sub StockAnalysis()
 
         While Not IsEmpty(WS.Cells(Tick_Begin, 1))
             Ticker = TickerVal(Tick_Begin, WS)
-            Vol = Volume(Tick_Begin, Tick_End, WS)
+            vol = Volume(Tick_Begin, Tick_End, WS)
             yearlyChange = Delta(Tick_Begin, Tick_End, WS)
             percentChange = PercentDelta(Tick_Begin, Tick_End, WS)
             
-            WS.Cells(Summary_Table_Row, 10).Value = Ticker
-            WS.Cells(Summary_Table_Row, 11).Value = yearlyChange
-            WS.Cells(Summary_Table_Row, 12).Value = percentChange
-            WS.Cells(Summary_Table_Row, 13).Value = Vol
+            WS.Cells(Summary_Table_Row, 10).value = Ticker
+            WS.Cells(Summary_Table_Row, 11).value = yearlyChange
+            WS.Cells(Summary_Table_Row, 12).value = percentChange
+            WS.Cells(Summary_Table_Row, 13).value = vol
             
             If (yearlyChange > 0) Then
                 WS.Cells(Summary_Table_Row, 11).Interior.ColorIndex = 4
             ElseIf (yearlyChange < 0) Then
                 WS.Cells(Summary_Table_Row, 11).Interior.ColorIndex = 3
             End If
+            
+            WS.Cells(Summary_Table_Row, 12).NumberFormat = "0.00%"
 
             Tick_Begin = Tick_End + 1
             Tick_End = nextIndex(Tick_Begin, WS) - 1
@@ -114,26 +116,28 @@ Public Sub StockAnalysis()
 
         Summary_Table_Row = Summary_Table_Row - 1
 
-        WS.Cells(2, 15).Value = "Greatest Percent Increase"
-        WS.Cells(3, 15).Value = "Greatest Percent Decrease"
-        WS.Cells(4, 15).Value = "Greatest Total Volume"
+        WS.Cells(2, 15).value = "Greatest Percent Increase"
+        WS.Cells(3, 15).value = "Greatest Percent Decrease"
+        WS.Cells(4, 15).value = "Greatest Total Volume"
 
-        WS.Cells(1, 16).Value = "Ticker"
-        WS.Cells(1, 17).Value = "Value"
+        WS.Cells(1, 16).value = "Ticker"
+        WS.Cells(1, 17).value = "Value"
 
 
         changeMindex = ArgMin(2, Summary_Table_Row, 12, WS)
         changeMaxdex = ArgMax(2, Summary_Table_Row, 12, WS)
 
-        WS.Cells(2, 16).Value = WS.Cells(changeMaxdex, 10).Value
-        WS.Cells(2, 17).Value = WS.Cells(changeMaxdex, 12).Value
+        WS.Cells(2, 16).value = WS.Cells(changeMaxdex, 10).value
+        WS.Cells(2, 17).value = WS.Cells(changeMaxdex, 12).value
+        WS.Cells(2, 17).NumberFormat = "0.00%"
 
-        WS.Cells(3, 16).Value = WS.Cells(changeMindex, 10).Value
-        WS.Cells(3, 17).Value = WS.Cells(changeMindex, 12).Value
+        WS.Cells(3, 16).value = WS.Cells(changeMindex, 10).value
+        WS.Cells(3, 17).value = WS.Cells(changeMindex, 12).value
+        WS.Cells(3, 17).NumberFormat = "0.00%"
 
         volMaxdex = ArgMax(2, Summary_Table_Row, 13, WS)
-        WS.Cells(4, 16).Value = WS.Cells(volMaxdex, 10).Value
-        WS.Cells(4, 17).Value = WS.Cells(volMaxdex, 13).Value
+        WS.Cells(4, 16).value = WS.Cells(volMaxdex, 10).value
+        WS.Cells(4, 17).value = WS.Cells(volMaxdex, 13).value
         
     Next WS
 End Sub
